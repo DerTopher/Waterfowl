@@ -105,7 +105,6 @@ class Game(arcade.Window):
 
         for i in range(self.bullets_in_magazine):
             arcade.draw_scaled_texture_rectangle(self.SCREEN_WIDTH - 30*i-20, 30, self.shotgunshells, 0.1)
-        #TODO: Dashier funktioniert manchal und manchmal nicht. Was ist da los? Da muss irgendwas mit der Speicherverwaltung Buggy sein!
         arcade.draw_text(self.NAME_OF_THE_GAME, self.SCREEN_WIDTH/2, self.SCREEN_HEIGHT/2, arcade.color.BLACK, 14, align="center")
         self.enten_list.draw()
         self.player_list.draw()

@@ -9,7 +9,6 @@ When trying to run the program from source code users of Arch Linux (possibly ot
   `pip install --compile --install-option=-O1 Pillow`
 
 
-
 ### Steps
 1. Install virtual environment `python3 -m venv .env`
 1. Activate with `. .env/bin/activate`, deactivate with `deactivate`
@@ -17,5 +16,8 @@ When trying to run the program from source code users of Arch Linux (possibly ot
 1. Follow [RealPython Tutorial](https://realpython.com/arcade-python-game-framework/#basic-arcade-program) from here
 
 ### Resources
-- [RealPython Tutorial](https://realpython.com/arcade-python-game-framework/)
-- [Moorhuhn Sprites & Sounds](http://python4kids.net/downloads/py4k_cda4/py4kids-material/kap15_a4/Programme/)
+- [https://arcade.academy/](https://arcade.academy/)
+
+### Contributors
+@cmacht
+@dertopher
