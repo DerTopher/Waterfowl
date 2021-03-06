@@ -1,8 +1,6 @@
 import arcade
 import random
 
-
-
 class Game(arcade.Window):
     """
     Main application class.
@@ -11,8 +9,6 @@ class Game(arcade.Window):
     If you do need a method, delete the 'pass' and replace it
     with your own code. Don't leave 'pass' in this program.
     """
-
-
 
     def __init__(self, width, height, game_title):
         super().__init__(width, height, game_title)
@@ -23,13 +19,13 @@ class Game(arcade.Window):
         # If you have sprite lists, you should create them here,
         # and set them to None
         self.player_list = None
-        self.sprite_list = None
+        self.enten_list = None
 
     def setup(self):
         self.SCREEN_WIDTH = self.width
         self.SCREEN_HEIGHT = self.height
         self.SCREEN_BOTTOM = 0
-        self.NAME_OF_THE_GAME = "The Drake's Pursuit"
+        self.NAME_OF_THE_GAME = "Mallard Pursuit"
         self.background = None
 
         # Don't show the mouse cursor
@@ -94,6 +90,10 @@ class Game(arcade.Window):
             self.SCREEN_HEIGHT,
             self.background
         )
+
+        ## TODO: Wieso erscheint die Ente trotzdem vor den Layern?
+        self.enten_list.draw()
+
         for i in range(len(self.layers)):
             arcade.draw_texture_rectangle(
             self.SCREEN_WIDTH / 2,
@@ -103,14 +103,59 @@ class Game(arcade.Window):
             self.layers[i])
 
 
+
         for i in range(self.bullets_in_magazine):
             arcade.draw_scaled_texture_rectangle(self.SCREEN_WIDTH - 30*i-20, 30, self.shotgunshells, 0.1)
-        arcade.draw_text(self.NAME_OF_THE_GAME, self.SCREEN_WIDTH/2, self.SCREEN_HEIGHT/2, arcade.color.BLACK, 14, align="center")
+
+        arcade.draw_text(
+            self.NAME_OF_THE_GAME,
+            self.SCREEN_WIDTH / 2,
+            self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3,
+            (0, 0, 0,),
+            anchor_x="center",
+            font_size=100,
+            font_name=("OpenBars", 'calibri', "arial")
+        )
+
+
+
+
+        arcade.draw_text(
+            "Start Game",
+            self.SCREEN_WIDTH / 2,
+            self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 240,
+            (0, 0, 0,),
+            anchor_x="center",
+            font_size=40,
+            font_name=("OpenBars", 'calibri', "arial")
+        )
+
+        arcade.draw_text(
+            "Credits",
+            self.SCREEN_WIDTH / 2,
+            self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 340,
+            (0, 0, 0,),
+            anchor_x="center",
+            font_size=40,
+            font_name=("OpenBars", 'calibri', "arial")
+        )
+
+        arcade.draw_text(
+            "Exit",
+            self.SCREEN_WIDTH / 2,
+            self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 440,
+            (0, 0, 0,),
+            anchor_x="center",
+            font_size=40,
+            font_name=("OpenBars", 'calibri', "arial")
+        )
+
+
         self.enten_list.draw()
         self.player_list.draw()
 
 
-    #TODO: Zufällig Enten generieren uns spawnen lassen
+    #### TODO: Zufällig Enten generieren uns spawnen lassen
     #def entewuerfeln(self):
     #    zufall = random.randint(1, 6)
     #    if zufall == 6:
@@ -160,6 +205,7 @@ class Game(arcade.Window):
                 arcade.play_sound(self.mossberg_happy)
                 self.bullets_in_magazine = self.bullets_in_magazine -1
             else:
+                #TODO: Klicksound muss her
                 #arcade.play_sound()
                 print("leer")
 
@@ -177,11 +223,10 @@ class Game(arcade.Window):
 
 def main():
     """ Main method """
-    game_title = "The Drake's Pursuit"  # Denkbare Alternative: Hunt for Cocks
+    game_title = "Mallard Pursuit"  # Denkbare Alternative: Hunt for Cocks
     game = Game(1920, 1000, game_title)
     game.setup()
     arcade.run()
-    del game
 
 
 
