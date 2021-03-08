@@ -1,5 +1,7 @@
 import arcade
 import random
+import time
+
 
 class Game(arcade.Window):
     """
@@ -20,6 +22,7 @@ class Game(arcade.Window):
         # and set them to None
         self.player_list = None
         self.enten_list = None
+        self.time = 0.0
 
     def setup(self):
         self.SCREEN_WIDTH = self.width
@@ -27,6 +30,7 @@ class Game(arcade.Window):
         self.SCREEN_BOTTOM = 0
         self.NAME_OF_THE_GAME = "Mallard Pursuit"
         self.background = None
+        self.time = 0.0
 
         # Don't show the mouse cursor
         self.set_mouse_visible(False)
@@ -52,10 +56,18 @@ class Game(arcade.Window):
 
         # Set up the Duck
         #Todo: Der Sprite ist zu animieren.
-        self.enten_sprite = arcade.Sprite("images/sprites/Ente1/e0.png", 0.3)
+        self.enten_sprite =[]
+        self.enten_sprite = arcade.AnimatedTimeBasedSprite("images/sprites/Ente1/e0.png", 0.3)
+        for i in range(1, 4):
+            self.enten_sprite.append_texture(arcade.load_texture(f"images/sprites/Ente1/e{i}.png"))
+        self.enten_sprite.append_texture(arcade.load_texture(f"images/sprites/Ente1/e2.png"))
+        self.enten_sprite.append_texture(arcade.load_texture(f"images/sprites/Ente1/e1.png"))
+        self.enten_sprite_zaehler = 0
         self.enten_sprite.center_x = 64
         self.enten_sprite.center_y = 120
         self.enten_list.append(self.enten_sprite)
+        self.enten_geschwindigkeit_x = 300
+        self.enten_geschwindigkeit_y = 150
 
         #load sounds
         self.mossberg = arcade.load_sound("sounds/Mossberg500.ogg")
@@ -70,7 +82,7 @@ class Game(arcade.Window):
         #load background
         self.background = arcade.load_texture("images/scenery/layer0.png")
         self.layers = []
-        for i in range (1, 4):
+        for i in range(0, 4):
             self.layers.append(arcade.load_texture(f"images/scenery/layer{i}.png"))
 
         #load Ammo
@@ -106,6 +118,18 @@ class Game(arcade.Window):
 
         for i in range(self.bullets_in_magazine):
             arcade.draw_scaled_texture_rectangle(self.SCREEN_WIDTH - 30*i-20, 30, self.shotgunshells, 0.1)
+
+            # Calculate minutes
+        minutes = int(self.time) // 60
+
+            # Calculate seconds by using a modulus (remainder)
+        seconds = int(self.time) % 60
+
+            # Figure out our output
+        output = f"Time: {minutes:02d}:{seconds:02d}"
+
+            # Output the timer text.
+        arcade.draw_text(output, 300, 300, arcade.color.WHITE, 30)
 
         arcade.draw_text(
             self.NAME_OF_THE_GAME,
@@ -150,7 +174,6 @@ class Game(arcade.Window):
             font_name=("OpenBars", 'calibri', "arial")
         )
 
-
         self.enten_list.draw()
         self.player_list.draw()
 
@@ -168,8 +191,32 @@ class Game(arcade.Window):
         Normally, you'll call update() on the sprite lists that
         need it.
         """
-        self.enten_sprite.center_x = self.enten_sprite.center_x + 2
-        self.enten_sprite.center_y = self.enten_sprite.center_y + 2
+        self.time += delta_time
+        self.enten_sprite.center_x += self.enten_geschwindigkeit_x * delta_time
+        self.enten_sprite.center_y += self.enten_geschwindigkeit_y * delta_time
+
+        if self.enten_sprite.center_x + 1 > self.SCREEN_WIDTH:
+            self.enten_geschwindigkeit_x *= -1
+        elif self.enten_sprite.center_x + 1 <= 0:
+            self.enten_geschwindigkeit_x *= -1
+
+
+        if self.enten_sprite.center_y + 1 > self.SCREEN_HEIGHT:
+            self.enten_geschwindigkeit_y *= -1
+        elif self.enten_sprite.center_y + 1 <= 0:
+            self.enten_geschwindigkeit_y *= -1
+
+        #TODO: Wie bekommt man es hin den Sprite jede halbe sekunde abzudaten ohne die Update Funktion als ganzes zu pausieren?
+        x = str(int(time.time()))
+        print(int(time.time()))
+
+        if x != str(int(delta_time)):
+            if self.enten_sprite_zaehler < 5:
+                self.enten_sprite_zaehler = self.enten_sprite_zaehler + 1
+            else:
+                self.enten_sprite_zaehler = 0
+            self.enten_sprite.set_texture(self.enten_sprite_zaehler)
+
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -223,7 +270,7 @@ class Game(arcade.Window):
 
 def main():
     """ Main method """
-    game_title = "Mallard Pursuit"  # Denkbare Alternative: Hunt for Cocks
+    game_title = "Mallard Pursuit"  # Denkbare Alternative: Hunt for Cocks # FederWild
     game = Game(1920, 1000, game_title)
     game.setup()
     arcade.run()
