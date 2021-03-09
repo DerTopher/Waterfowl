@@ -31,6 +31,7 @@ class Game(arcade.Window):
         self.NAME_OF_THE_GAME = "Mallard Pursuit"
         self.background = None
         self.time = 0.0
+        self.menu = True # Variable die Bestimmt, ob das Menü angezeigt wird
 
         # Don't show the mouse cursor
         self.set_mouse_visible(False)
@@ -68,16 +69,22 @@ class Game(arcade.Window):
         self.enten_list.append(self.enten_sprite)
         self.enten_geschwindigkeit_x = 300
         self.enten_geschwindigkeit_y = 150
+        self.entenanimationszeitkonstante = time.monotonic_ns()
 
         #load sounds
         self.mossberg = arcade.load_sound("sounds/Mossberg500.ogg")
         self.walther = arcade.load_sound("sounds/Mein_Gott_Watlher.ogg")
         self.mossberg_happy = arcade.load_sound("sounds/Mossberg500-happy.ogg")
         self.Teckel = arcade.load_sound("sounds/Teckel.ogg")
-        self.nachladen = arcade.load_sound("sounds/Mein_Gott_Watlher.ogg")
+        self.nachladen = arcade.load_sound("sounds/reload.ogg")
 
+        #initialize stuff to reload
+        self.nachladezeitzeitkonstante = str
+        self.einmalschalter = True
+
+        #background music
         self.music = arcade.load_sound("sounds/hintergrundgerausche.ogg")
-        arcade.play_sound(self.music, 0.5, 0.0, True)
+        arcade.play_sound(self.music, 0.25, 0.0, True)
 
         #load background
         self.background = arcade.load_texture("images/scenery/layer0.png")
@@ -87,6 +94,16 @@ class Game(arcade.Window):
 
         #load Ammo
         self.shotgunshells = arcade.load_texture("images/ammunition/shell.png")
+
+    def timerstand_bestimmen(self):
+            # Calculate minutes
+        minutes = int(self.time) // 60
+
+            # Calculate seconds by using a modulus (remainder)
+        seconds = int(self.time) % 60
+
+            # Figure out our output
+        self.timer = f"Time: {minutes:02d}:{seconds:02d}"
 
     def on_draw(self):
         """
@@ -106,7 +123,7 @@ class Game(arcade.Window):
         ## TODO: Wieso erscheint die Ente trotzdem vor den Layern?
         self.enten_list.draw()
 
-        for i in range(len(self.layers)):
+        for i in range(1, len(self.layers)):
             arcade.draw_texture_rectangle(
             self.SCREEN_WIDTH / 2,
             self.SCREEN_HEIGHT / 2,
@@ -116,63 +133,76 @@ class Game(arcade.Window):
 
 
 
+
         for i in range(self.bullets_in_magazine):
             arcade.draw_scaled_texture_rectangle(self.SCREEN_WIDTH - 30*i-20, 30, self.shotgunshells, 0.1)
 
-            # Calculate minutes
-        minutes = int(self.time) // 60
 
-            # Calculate seconds by using a modulus (remainder)
-        seconds = int(self.time) % 60
-
-            # Figure out our output
-        output = f"Time: {minutes:02d}:{seconds:02d}"
-
+        ###Hier wird der Timerstand bestimmt
+        self.timerstand_bestimmen()
             # Output the timer text.
-        arcade.draw_text(output, 300, 300, arcade.color.WHITE, 30)
-
         arcade.draw_text(
-            self.NAME_OF_THE_GAME,
-            self.SCREEN_WIDTH / 2,
-            self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3,
-            (0, 0, 0,),
-            anchor_x="center",
-            font_size=100,
+            self.timer,
+            15,
+            self.SCREEN_HEIGHT - 50,
+            arcade.color.BURGUNDY,
+            font_size=30,
             font_name=("OpenBars", 'calibri', "arial")
         )
 
+        if self.menu:
+            arcade.draw_text(
+                self.NAME_OF_THE_GAME,
+                self.SCREEN_WIDTH / 2,
+                self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3,
+                (0, 0, 0,),
+                anchor_x="center",
+                font_size=100,
+                font_name=("OpenBars", 'calibri', "arial")
+            )
 
 
 
-        arcade.draw_text(
-            "Start Game",
-            self.SCREEN_WIDTH / 2,
-            self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 240,
-            (0, 0, 0,),
-            anchor_x="center",
-            font_size=40,
-            font_name=("OpenBars", 'calibri', "arial")
-        )
 
-        arcade.draw_text(
-            "Credits",
-            self.SCREEN_WIDTH / 2,
-            self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 340,
-            (0, 0, 0,),
-            anchor_x="center",
-            font_size=40,
-            font_name=("OpenBars", 'calibri', "arial")
-        )
+            arcade.draw_text(
+                "Start Game",
+                self.SCREEN_WIDTH / 2,
+                self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 240,
+                (0, 0, 0,),
+                anchor_x="center",
+                font_size=40,
+                font_name=("OpenBars", 'calibri', "arial")
+            )
 
-        arcade.draw_text(
-            "Exit",
-            self.SCREEN_WIDTH / 2,
-            self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 440,
-            (0, 0, 0,),
-            anchor_x="center",
-            font_size=40,
-            font_name=("OpenBars", 'calibri', "arial")
-        )
+            arcade.draw_text(
+                "Credits",
+                self.SCREEN_WIDTH / 2,
+                self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 340,
+                (0, 0, 0,),
+                anchor_x="center",
+                font_size=40,
+                font_name=("OpenBars", 'calibri', "arial")
+            )
+
+            arcade.draw_text(
+                "Exit",
+                self.SCREEN_WIDTH / 2,
+                self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 440,
+                (0, 0, 0,),
+                anchor_x="center",
+                font_size=40,
+                font_name=("OpenBars", 'calibri', "arial")
+            )
+
+            arcade.draw_text(
+                "© C. Driebe & C. Macht 2021",
+                self.SCREEN_WIDTH / 2,
+                self.SCREEN_HEIGHT / 2 + self.SCREEN_HEIGHT / 3 - 740,
+                (255, 255, 255,),
+                anchor_x="center",
+                font_size=14,
+                font_name=('calibri', "arial")
+            )
 
         self.enten_list.draw()
         self.player_list.draw()
@@ -206,11 +236,8 @@ class Game(arcade.Window):
         elif self.enten_sprite.center_y + 1 <= 0:
             self.enten_geschwindigkeit_y *= -1
 
-        #TODO: Wie bekommt man es hin den Sprite jede halbe sekunde abzudaten ohne die Update Funktion als ganzes zu pausieren?
-        x = str(int(time.time()))
-        print(int(time.time()))
-
-        if x != str(int(delta_time)):
+        if self.entenanimationszeitkonstante+75000000 <= time.monotonic_ns():
+            self.entenanimationszeitkonstante = time.monotonic_ns()
             if self.enten_sprite_zaehler < 5:
                 self.enten_sprite_zaehler = self.enten_sprite_zaehler + 1
             else:
@@ -245,6 +272,7 @@ class Game(arcade.Window):
         """
         Called when the user presses a mouse button.
         """
+        #TODO: Kadenz zwischen Schüssen
         if button == arcade.MOUSE_BUTTON_LEFT:
             position_letzter_linksklick = [x, y]
             print("Letzter Linksklick: ", position_letzter_linksklick)
@@ -257,9 +285,17 @@ class Game(arcade.Window):
                 print("leer")
 
         elif button == arcade.MOUSE_BUTTON_RIGHT:
-            print("Nachladen")
-            arcade.play_sound(self.nachladen)
-            self.bullets_in_magazine = 3
+            if self.einmalschalter == True:
+                self.nachladezeitzeitkonstante = time.strftime("%S")
+                self.einmalschalter = False
+
+            #TODO: Kadenz zwischen Nachladern
+            #TODO: Interessante Spielvariante: Versagerpatronen
+            if self.bullets_in_magazine < 3:
+                print("Nachladen")
+                arcade.play_sound(self.nachladen)
+                while self.bullets_in_magazine < 3:
+                    self.bullets_in_magazine = self.bullets_in_magazine + 1
 
     def on_mouse_release(self, x, y, button, key_modifiers):
         """
